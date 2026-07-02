@@ -8,7 +8,7 @@
         <div class="col-lg-6 auth-hero">
             <div class="d-flex flex-column h-100 justify-content-between">
                 <div>
-                    <span class="badge rounded-pill bg-white text-primary mb-3">Sistem Informasi Madrasah</span>
+                    <span class="badge rounded-pill bg-white text-primary mb-3">SIPESAN</span>
                     <h2 class="fw-bold mb-3">Kelola data sekolah dengan cepat dan aman.</h2>
                     <p class="mb-0 text-white-50">Pantau siswa, absensi, pelanggaran, prestasi, dan kebutuhan administrasi sekolah dalam satu dashboard modern.</p>
                 </div>

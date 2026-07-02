@@ -1,4 +1,4 @@
-# Sistem Pencatatan Siswa MTs Al-Ihsan Batujajar
+# Sistem Pencatatan Siswa MTs Al-Ihsan Batujajar (SIPESAN)
 
 Aplikasi web administrasi sekolah untuk mencatat dan memantau data siswa MTs Al-Ihsan Batujajar. Project ini dibangun dengan Laravel dan menyediakan modul pengelolaan siswa, kelas, absensi, pelanggaran, surat izin, kebersihan kelas, keterlambatan, prestasi, pengaturan tahun ajaran, serta export laporan.
 

@@ -17,7 +17,7 @@
                 <a href="{{ route('dashboard') }}" class="brand text-decoration-none text-white">
                     <img src="{{ asset('logo-sekolah.png') }}" alt="Logo MTs Al-Ihsan" class="brand-icon">
                     <div>
-                        <div class="fw-bold">MTs Al-Ihsan Batujajar</div>
+                        <div class="fw-bold">SIPESAN</div>
                         <small class="opacity-75">Sistem Pencatatan Siswa</small>
                     </div>
                 </a>
