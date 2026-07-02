@@ -11,7 +11,7 @@ class PengaturanController extends Controller
 {
     public function index(): View
     {
-        $tahunAjaran = TahunAjaran::query()->latest()->get();
+        $tahunAjaran = TahunAjaran::query()->latest()->paginate(10);
 
         return view('pengaturan.index', compact('tahunAjaran'));
     }

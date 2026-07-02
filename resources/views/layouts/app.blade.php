@@ -15,10 +15,10 @@
         <div class="app-shell">
             <aside class="sidebar d-none d-lg-flex">
                 <a href="{{ route('dashboard') }}" class="brand text-decoration-none text-white">
-                    <div class="brand-icon">AI</div>
+                    <img src="{{ asset('logo-sekolah.png') }}" alt="Logo MTs Al-Ihsan" class="brand-icon">
                     <div>
-                        <div class="fw-bold">MTs Al-Ihsan</div>
-                        <small class="opacity-75">School Management</small>
+                        <div class="fw-bold">MTs Al-Ihsan Batujajar</div>
+                        <small class="opacity-75">Sistem Pencatatan Siswa</small>
                     </div>
                 </a>
 
@@ -50,7 +50,7 @@
                     <div class="d-flex justify-content-between align-items-center w-100">
                         <div>
                             <h5 class="fw-bold mb-0">@yield('title', 'Dashboard')</h5>
-                            <small class="text-muted">Sistem informasi madrasah modern</small>
+                            <small class="text-muted">Sistem informasi Pencatatan Siswa</small>
                         </div>
                         <div class="d-flex align-items-center gap-3">
                             <a class="btn btn-outline-secondary btn-sm d-lg-none" data-bs-toggle="offcanvas" href="#mobileMenu" role="button">Menu</a>
@@ -68,6 +68,10 @@
                 <main class="page-content">
                     @if(session('success'))
                         <div class="alert alert-success rounded-4">{{ session('success') }}</div>
+                    @endif
+
+                    @if(session('error'))
+                        <div class="alert alert-danger rounded-4">{{ session('error') }}</div>
                     @endif
 
                     @if($errors->any())
@@ -125,5 +129,6 @@
     @endif
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @yield('scripts')
 </body>
 </html>

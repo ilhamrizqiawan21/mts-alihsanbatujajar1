@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Kelas;
 use App\Models\Siswa;
+use App\Support\XlsxExporter;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -12,9 +14,39 @@ class SiswaController extends Controller
 {
     public function index(): View
     {
-        $siswas = Siswa::query()->with('kelas')->latest()->get();
+        $siswas = Siswa::query()->with('kelas')->latest()->paginate(10);
 
         return view('siswa.index', compact('siswas'));
+    }
+
+    public function exportPdf(): \Symfony\Component\HttpFoundation\Response
+    {
+        $siswas = Siswa::query()->with('kelas')->latest()->get();
+        $pdf = Pdf::loadView('exports.siswa', compact('siswas'));
+
+        return $pdf->download('siswa.pdf');
+    }
+
+    public function exportXlsx(): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        $siswas = Siswa::query()->with('kelas')->latest()->get();
+        $rows = [];
+
+        foreach ($siswas as $siswa) {
+            $rows[] = [
+                $siswa->nis,
+                $siswa->nama,
+                $siswa->kelas?->nama_kelas ?? '-',
+                $siswa->jenis_kelamin === 'L' ? 'Laki-laki' : ($siswa->jenis_kelamin === 'P' ? 'Perempuan' : '-'),
+                $siswa->tempat_lahir ?? '-',
+                $siswa->tanggal_lahir?->format('Y-m-d') ?? '-',
+                $siswa->alamat ?? '-',
+                $siswa->no_hp_ortu ?? '-',
+                $siswa->status ? 'Aktif' : 'Nonaktif',
+            ];
+        }
+
+        return XlsxExporter::download('siswa.xlsx', ['NIS', 'Nama', 'Kelas', 'Jenis Kelamin', 'Tempat Lahir', 'Tanggal Lahir', 'Alamat', 'No HP Orang Tua', 'Status'], $rows);
     }
 
     public function create(): View

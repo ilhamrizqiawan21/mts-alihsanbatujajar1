@@ -7,6 +7,7 @@ use App\Models\Kelas;
 use App\Models\Pelanggaran;
 use App\Models\Siswa;
 use App\Models\TahunAjaran;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class HomeController extends Controller
@@ -21,6 +22,9 @@ class HomeController extends Controller
             'pelanggaran' => 0,
         ];
         $recentStudents = collect();
+        $recentViolations = collect();
+        $todayAbsensi = 0;
+        $todayStatusCounts = [];
 
         try {
             $activeYear = TahunAjaran::query()->where('is_aktif', true)->latest()->first();
@@ -30,11 +34,25 @@ class HomeController extends Controller
                 'absensi' => Absensi::query()->count(),
                 'pelanggaran' => Pelanggaran::query()->count(),
             ];
+
             $recentStudents = Siswa::query()->with('kelas')->latest()->take(5)->get();
+            $recentViolations = Pelanggaran::query()
+                ->with(['siswa', 'jenisPelanggaran'])
+                ->latest()
+                ->take(5)
+                ->get();
+
+            $todayAbsensi = Absensi::query()->whereDate('tanggal', now())->count();
+            $todayStatusCounts = Absensi::query()
+                ->select('status', DB::raw('count(*) as total'))
+                ->whereDate('tanggal', now())
+                ->groupBy('status')
+                ->pluck('total', 'status')
+                ->all();
         } catch (\Throwable) {
             // Tetap tampilkan halaman dashboard dengan data kosong sampai tabel server siap.
         }
 
-        return view('home', compact('activeYear', 'stats', 'recentStudents'));
+        return view('home', compact('activeYear', 'stats', 'recentStudents', 'recentViolations', 'todayAbsensi', 'todayStatusCounts'));
     }
 }

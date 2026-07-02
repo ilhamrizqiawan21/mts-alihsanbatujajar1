@@ -34,7 +34,8 @@
         <div class="card shadow-sm border-0">
             <div class="card-body">
                 <h3 class="fw-bold mb-3">Daftar Tahun Ajaran</h3>
-                <table class="table table-hover align-middle">
+                <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
                             <th>Tahun</th>
@@ -60,6 +61,10 @@
                         @endforelse
                     </tbody>
                 </table>
+                </div>
+                <div class="mt-3 d-flex justify-content-end">
+                    {{ $tahunAjaran->links() }}
+                </div>
             </div>
         </div>
     </div>
