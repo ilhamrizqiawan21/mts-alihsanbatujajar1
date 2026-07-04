@@ -93,7 +93,7 @@
                                 <div class="d-flex justify-content-end gap-1 flex-wrap">
                                     <a href="{{ route('siswa.show', $siswa) }}" class="btn btn-sm btn-outline-info">Lihat</a>
                                     <a href="{{ route('siswa.edit', $siswa) }}" class="btn btn-sm btn-outline-warning">Edit</a>
-                                    <form action="{{ route('siswa.destroy', $siswa) }}" method="POST" onsubmit="return confirm('Hapus siswa ini?');" class="d-inline">
+                                    <form action="{{ route('siswa.destroy', $siswa) }}" method="POST" data-confirm-message="Hapus siswa ini?" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>

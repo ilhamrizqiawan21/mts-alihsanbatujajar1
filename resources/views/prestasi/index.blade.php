@@ -109,7 +109,7 @@
                                 <td class="text-end">
                                     <div class="d-flex justify-content-end gap-1 flex-wrap">
                                         <a href="{{ route('prestasi.edit', $record) }}" class="btn btn-sm btn-outline-warning">Edit</a>
-                                        <form action="{{ route('prestasi.destroy', $record) }}" method="POST" onsubmit="return confirm('Hapus data prestasi ini?');" class="d-inline">
+                                        <form action="{{ route('prestasi.destroy', $record) }}" method="POST" data-confirm-message="Hapus data prestasi ini?" class="d-inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>

@@ -48,7 +48,7 @@
                                 <div class="d-flex gap-2 justify-content-end">
                                     <a href="{{ route('kelas.show', $item->id) }}" class="btn btn-sm btn-outline-info">Detail</a>
                                     <a href="{{ route('kelas.edit', $item->id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
-                                    <form action="{{ route('kelas.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data kelas ini?');">
+                                    <form action="{{ route('kelas.destroy', $item->id) }}" method="POST" class="d-inline" data-confirm-message="Yakin ingin menghapus data kelas ini?">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>

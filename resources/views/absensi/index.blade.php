@@ -3,7 +3,7 @@
 @section('title', 'Absensi')
 
 @section('content')
-<div class="card shadow-sm border-0 mb-4">
+<div class="card page-card mb-4">
     <div class="card-body p-4">
         <div class="row g-3 align-items-end">
             <div class="col-md-3">
@@ -40,26 +40,34 @@
 
 <form action="{{ route('absensi.store') }}" method="POST">
     @csrf
-    <div class="card shadow-sm border-0">
+    <div class="card page-card attendance-card">
         <div class="card-body p-4">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
                 <div>
                     <h3 class="fw-bold mb-1">Input Absensi Bulanan</h3>
                     <p class="text-muted mb-0">{{ $monthLabel }} · {{ $activeYear?->tahun ?? 'Tanpa tahun ajaran aktif' }}</p>
                 </div>
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <div class="attendance-legend">
+                        <span><strong>H</strong> Hadir</span>
+                        <span><strong>I</strong> Izin</span>
+                        <span><strong>S</strong> Sakit</span>
+                        <span><strong>A</strong> Alfa</span>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bi bi-save"></i> Simpan
+                    </button>
                 </div>
             </div>
 
-            <div class="table-responsive" style="max-height: 70vh; overflow:auto;">
-                <table class="table table-bordered align-middle mb-0">
+            <div class="table-responsive attendance-table-wrap">
+                <table class="table table-bordered align-middle mb-0 attendance-table">
                     <thead class="table-light">
                         <tr>
-                            <th style="width: 50px; position: sticky; left: 0; z-index: 2; background: #f8f9fa;">No.</th>
-                            <th style="min-width: 180px; position: sticky; left: 50px; z-index: 2; background: #f8f9fa;">Nama Siswa</th>
+                            <th class="attendance-sticky attendance-no">No.</th>
+                            <th class="attendance-sticky attendance-name">Nama Siswa</th>
                             @for($day = 1; $day <= $daysInMonth; $day++)
-                                <th class="text-center" style="min-width: 42px;">{{ $day }}</th>
+                                <th class="text-center attendance-day">{{ $day }}</th>
                             @endfor
                         </tr>
                         <tr class="table-secondary">
@@ -79,8 +87,8 @@
                     <tbody>
                         @forelse($siswas as $index => $siswa)
                             <tr>
-                                <td class="fw-semibold text-muted" style="position: sticky; left: 0; background: white;">{{ $index + 1 }}</td>
-                                <td style="position: sticky; left: 50px; background: white;">
+                                <td class="fw-semibold text-muted attendance-sticky attendance-no">{{ $index + 1 }}</td>
+                                <td class="attendance-sticky attendance-name">
                                     <div class="fw-semibold">{{ $siswa->nama }}</div>
                                     <small class="text-muted">{{ $siswa->kelas->nama_kelas ?? '-' }}</small>
                                 </td>
