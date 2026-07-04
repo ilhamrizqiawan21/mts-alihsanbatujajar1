@@ -13,9 +13,11 @@ use App\Http\Controllers\SiswaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return session()->has('user_id')
-        ? redirect()->route('dashboard')
-        : redirect()->route('login');
+    if (session()->has('user_id')) {
+        return app(HomeController::class)->index();
+    }
+
+    return redirect()->route('login');
 });
 
 // Auth routes for legacy session-based login
