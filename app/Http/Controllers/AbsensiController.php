@@ -10,6 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class AbsensiController extends Controller
@@ -34,19 +35,16 @@ class AbsensiController extends Controller
         $daysInMonth = Carbon::create($selectedYear, $selectedMonth, 1)->daysInMonth;
         $monthLabel = Carbon::create($selectedYear, $selectedMonth, 1)->translatedFormat('F Y');
 
-        $attendanceMap = [];
+        $startDate = Carbon::create($selectedYear, $selectedMonth, 1)->startOfMonth()->toDateString();
+        $endDate = Carbon::create($selectedYear, $selectedMonth, 1)->endOfMonth()->toDateString();
 
-        foreach ($siswas as $siswa) {
-            $records = Absensi::query()
-                ->where('siswa_id', $siswa->id)
-                ->where('tahun_ajaran_id', $activeYear?->id)
-                ->whereMonth('tanggal', $selectedMonth)
-                ->whereYear('tanggal', $selectedYear)
-                ->get()
-                ->keyBy(fn ($item) => $item->tanggal->format('Y-m-d'));
-
-            $attendanceMap[$siswa->id] = $records;
-        }
+        $attendanceMap = Absensi::query()
+            ->whereIn('siswa_id', $siswas->pluck('id'))
+            ->where('tahun_ajaran_id', $activeYear?->id)
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->get()
+            ->groupBy('siswa_id')
+            ->map(fn ($records) => $records->keyBy(fn ($item) => $item->tanggal->format('Y-m-d')));
 
         return view('absensi.index', compact(
             'siswas',
@@ -64,34 +62,47 @@ class AbsensiController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $activeYear = TahunAjaran::query()->where('is_aktif', true)->latest()->first();
-        $statuses = $request->input('status', []);
 
-        foreach ($statuses as $siswaId => $dates) {
-            foreach ($dates as $date => $status) {
-                if ($status === '') {
-                    Absensi::query()
-                        ->where('siswa_id', $siswaId)
-                        ->where('tahun_ajaran_id', $activeYear?->id)
-                        ->whereDate('tanggal', $date)
-                        ->delete();
-
-                    continue;
-                }
-
-                Absensi::updateOrCreate(
-                    [
-                        'siswa_id' => $siswaId,
-                        'tahun_ajaran_id' => $activeYear?->id,
-                        'tanggal' => $date,
-                    ],
-                    [
-                        'status' => $status,
-                    ]
-                );
-            }
+        if (! $activeYear) {
+            return redirect()->route('absensi.index')->with('error', 'Tahun ajaran aktif belum ditetapkan. Atur terlebih dahulu di menu Pengaturan.');
         }
 
-        return redirect()->route('absensi.index')->with('success', 'Absensi berhasil disimpan.');
+        $statuses = $request->input('status', []);
+
+        DB::transaction(function () use ($statuses, $activeYear) {
+            foreach ($statuses as $siswaId => $dates) {
+                foreach ($dates as $date => $status) {
+                    if ($status === '') {
+                        Absensi::query()
+                            ->where('siswa_id', $siswaId)
+                            ->where('tahun_ajaran_id', $activeYear->id)
+                            ->whereDate('tanggal', $date)
+                            ->delete();
+
+                        continue;
+                    }
+
+                    if (! in_array($status, ['H', 'I', 'S', 'A'], true)) {
+                        continue;
+                    }
+
+                    Absensi::updateOrCreate(
+                        [
+                            'siswa_id' => $siswaId,
+                            'tahun_ajaran_id' => $activeYear->id,
+                            'tanggal' => $date,
+                        ],
+                        [
+                            'status' => $status,
+                        ]
+                    );
+                }
+            }
+        });
+
+        return redirect()
+            ->route('absensi.index', $request->only(['kelas_id', 'bulan', 'tahun']))
+            ->with('success', 'Absensi berhasil disimpan.');
     }
 
     public function exportPdf(Request $request)
@@ -111,19 +122,16 @@ class AbsensiController extends Controller
         $daysInMonth = Carbon::create($selectedYear, $selectedMonth, 1)->daysInMonth;
         $monthLabel = Carbon::create($selectedYear, $selectedMonth, 1)->translatedFormat('F Y');
 
-        $attendanceMap = [];
+        $startDate = Carbon::create($selectedYear, $selectedMonth, 1)->startOfMonth()->toDateString();
+        $endDate = Carbon::create($selectedYear, $selectedMonth, 1)->endOfMonth()->toDateString();
 
-        foreach ($siswas as $siswa) {
-            $records = Absensi::query()
-                ->where('siswa_id', $siswa->id)
-                ->where('tahun_ajaran_id', $activeYear?->id)
-                ->whereMonth('tanggal', $selectedMonth)
-                ->whereYear('tanggal', $selectedYear)
-                ->get()
-                ->keyBy(fn ($item) => $item->tanggal->format('Y-m-d'));
-
-            $attendanceMap[$siswa->id] = $records;
-        }
+        $attendanceMap = Absensi::query()
+            ->whereIn('siswa_id', $siswas->pluck('id'))
+            ->where('tahun_ajaran_id', $activeYear?->id)
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->get()
+            ->groupBy('siswa_id')
+            ->map(fn ($records) => $records->keyBy(fn ($item) => $item->tanggal->format('Y-m-d')));
 
         $pdf = Pdf::loadView('absensi.export-pdf', compact(
             'siswas',

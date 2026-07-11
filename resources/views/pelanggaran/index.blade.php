@@ -108,7 +108,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="5" class="text-center text-muted py-4">Belum ada data pelanggaran.</td></tr>
+                            <tr><td colspan="6" class="text-center text-muted py-4">Belum ada data pelanggaran.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

@@ -38,8 +38,11 @@
     </div>
 </div>
 
-<form action="{{ route('absensi.store') }}" method="POST">
+<form action="{{ route('absensi.store') }}" method="POST" id="attendanceForm">
     @csrf
+    <input type="hidden" name="kelas_id" value="{{ $selectedKelas }}">
+    <input type="hidden" name="bulan" value="{{ $selectedMonth }}">
+    <input type="hidden" name="tahun" value="{{ $selectedYear }}">
     <div class="card page-card attendance-card">
         <div class="card-body p-4">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
@@ -54,8 +57,8 @@
                         <span><strong>S</strong> Sakit</span>
                         <span><strong>A</strong> Alfa</span>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-sm">
-                        <i class="bi bi-save"></i> Simpan
+                    <button type="submit" class="btn btn-primary btn-sm" id="attendanceSubmit">
+                        <i class="bi bi-save"></i> <span>Simpan</span>
                     </button>
                 </div>
             </div>
@@ -98,7 +101,7 @@
                                         $record = $attendanceMap[$siswa->id][$date] ?? null;
                                     @endphp
                                     <td class="text-center">
-                                        <select class="form-select form-select-sm text-center attendance-select" name="status[{{ $siswa->id }}][{{ $date }}]" data-day="{{ $day }}">
+                                        <select class="form-select form-select-sm text-center attendance-select" name="status[{{ $siswa->id }}][{{ $date }}]" data-day="{{ $day }}" aria-label="Absensi {{ $siswa->nama }} tanggal {{ $day }}">
                                             <option value="" {{ is_null($record) ? 'selected' : '' }}>-</option>
                                             <option value="H" {{ ($record->status ?? '') === 'H' ? 'selected' : '' }}>H</option>
                                             <option value="I" {{ ($record->status ?? '') === 'I' ? 'selected' : '' }}>I</option>
@@ -124,6 +127,9 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('attendanceForm');
+        const submitButton = document.getElementById('attendanceSubmit');
+
         document.querySelectorAll('.btn-bulk').forEach(function (button) {
             button.addEventListener('click', function () {
                 const status = this.dataset.status;
@@ -134,6 +140,14 @@
                 });
             });
         });
+
+        if (form && submitButton) {
+            form.addEventListener('submit', function () {
+                submitButton.disabled = true;
+                submitButton.querySelector('span').textContent = 'Menyimpan...';
+                submitButton.insertAdjacentHTML('afterbegin', '<span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>');
+            });
+        }
     });
 </script>
 @endsection

@@ -283,6 +283,12 @@ button,
   border-radius: var(--radius-sm);
 }
 
+.input-group-text {
+  border-color: #d7e0ea;
+  background: #f8fafc;
+  color: var(--muted);
+}
+
 .form-control:focus,
 .form-select:focus {
   border-color: var(--accent);
@@ -342,6 +348,25 @@ button,
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 10px 12px;
+}
+
+.filter-panel {
+  padding: 14px;
+  border: 1px solid #e5edf5;
+  border-radius: var(--radius);
+  background: #f8fafc;
+}
+
+.empty-state {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  color: var(--muted);
+}
+
+.empty-state i {
+  font-size: 1.5rem;
+  color: #94a3b8;
 }
 
 .page-card .card-title {

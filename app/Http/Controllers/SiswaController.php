@@ -12,24 +12,37 @@ use Illuminate\View\View;
 
 class SiswaController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $siswas = Siswa::query()->with('kelas')->latest()->paginate(10);
+        $query = $this->filteredQuery($request)->with('kelas');
 
-        return view('siswa.index', compact('siswas'));
+        $studentStats = [
+            'total' => (clone $query)->count(),
+            'active' => (clone $query)->where('status', true)->count(),
+            'inactive' => (clone $query)->where('status', false)->count(),
+        ];
+
+        $siswas = (clone $query)
+            ->latest('id')
+            ->paginate(10)
+            ->appends($request->query());
+        $kelasList = Kelas::query()->orderBy('nama_kelas')->get();
+        $filters = $request->only(['q', 'kelas_id', 'status']);
+
+        return view('siswa.index', compact('siswas', 'kelasList', 'studentStats', 'filters'));
     }
 
-    public function exportPdf(): \Symfony\Component\HttpFoundation\Response
+    public function exportPdf(Request $request): \Symfony\Component\HttpFoundation\Response
     {
-        $siswas = Siswa::query()->with('kelas')->latest()->get();
+        $siswas = $this->filteredQuery($request)->with('kelas')->latest('id')->get();
         $pdf = Pdf::loadView('exports.siswa', compact('siswas'));
 
         return $pdf->download('siswa.pdf');
     }
 
-    public function exportXlsx(): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function exportXlsx(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        $siswas = Siswa::query()->with('kelas')->latest()->get();
+        $siswas = $this->filteredQuery($request)->with('kelas')->latest('id')->get();
         $rows = [];
 
         foreach ($siswas as $siswa) {
@@ -113,5 +126,30 @@ class SiswaController extends Controller
         $siswa->delete();
 
         return redirect()->route('siswa.index')->with('success', 'Data siswa berhasil dihapus.');
+    }
+
+    private function filteredQuery(Request $request): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = Siswa::query();
+
+        if ($request->filled('q')) {
+            $keyword = (string) $request->string('q')->trim();
+
+            $query->where(function ($q) use ($keyword) {
+                $q->where('nama', 'like', '%' . $keyword . '%')
+                    ->orWhere('nis', 'like', '%' . $keyword . '%')
+                    ->orWhere('no_hp_ortu', 'like', '%' . $keyword . '%');
+            });
+        }
+
+        if ($request->filled('kelas_id')) {
+            $query->where('kelas_id', $request->kelas_id);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', (bool) $request->integer('status'));
+        }
+
+        return $query;
     }
 }

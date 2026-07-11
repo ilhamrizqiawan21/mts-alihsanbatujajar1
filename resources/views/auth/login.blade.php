@@ -32,11 +32,16 @@
                     @csrf
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Username</label>
-                        <input name="username" value="{{ old('username') }}" class="form-control form-control-lg" placeholder="Masukkan username" required>
+                        <input name="username" value="{{ old('username') }}" class="form-control form-control-lg" placeholder="Masukkan username" autocomplete="username" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Password</label>
-                        <input name="password" type="password" class="form-control form-control-lg" placeholder="Masukkan password" required>
+                        <div class="input-group input-group-lg">
+                            <input id="passwordInput" name="password" type="password" class="form-control" placeholder="Masukkan password" autocomplete="current-password" required>
+                            <button class="btn btn-outline-secondary password-toggle" type="button" aria-label="Tampilkan password" aria-controls="passwordInput">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <button class="btn btn-primary btn-lg w-100">Masuk</button>
                 </form>
@@ -44,4 +49,24 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const passwordInput = document.getElementById('passwordInput');
+        const toggleButton = document.querySelector('.password-toggle');
+
+        if (!passwordInput || !toggleButton) {
+            return;
+        }
+
+        toggleButton.addEventListener('click', function () {
+            const isHidden = passwordInput.type === 'password';
+            passwordInput.type = isHidden ? 'text' : 'password';
+            toggleButton.setAttribute('aria-label', isHidden ? 'Sembunyikan password' : 'Tampilkan password');
+            toggleButton.querySelector('i').className = isHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
+        });
+    });
+</script>
 @endsection
