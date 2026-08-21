@@ -44,11 +44,7 @@ return new class extends Migration
             $table->id();
             $table->string('nama', 150);
             $table->integer('poin')->default(1);
-        });
-
-        Schema::create('tingkat_prestasi', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama', 50);
+            $table->timestamps();
         });
 
         Schema::create('absensi', function (Blueprint $table) {
@@ -92,7 +88,6 @@ return new class extends Migration
         Schema::dropIfExists('users');
         Schema::dropIfExists('pelanggaran');
         Schema::dropIfExists('absensi');
-        Schema::dropIfExists('tingkat_prestasi');
         Schema::dropIfExists('jenis_pelanggaran');
         Schema::dropIfExists('siswa');
         Schema::dropIfExists('kelas');
