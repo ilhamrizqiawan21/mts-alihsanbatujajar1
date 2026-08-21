@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('nilai_sampah')->default(0);
             $table->unsignedTinyInteger('nilai_rak')->default(0);
             $table->unsignedTinyInteger('nilai_penataan')->default(0);
-            $table->unsignedTinyInteger('nilai_total')->virtualAs('nilai_lantai + nilai_sampah + nilai_rak + nilai_penataan');
+            $table->unsignedTinyInteger('nilai_total')->default(0);
             $table->string('keterangan', 255)->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->index(['kelas_id', 'tanggal']);
